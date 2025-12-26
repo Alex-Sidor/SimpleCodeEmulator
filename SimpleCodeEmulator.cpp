@@ -21,6 +21,11 @@ enum OpCode : uint32_t {
 	RHX = 8,
 
 	DRF = 9, // derefrencs **MemorySegment | **Register to *MemoryPointedTo
+	MOV = 10,
+	SET = 11,
+
+
+
 
 };
 
@@ -34,6 +39,10 @@ std::map<std::string, uint8_t> InstructionSet = {
 	{"RFX", RFX},
 	{"RGX", RGX},
 	{"RHX", RHX},
+
+	{"DRF", DRF},
+	{"MOV", MOV},
+	{"SET", SET}
 };
 
 struct memory {
@@ -90,7 +99,7 @@ uint32_t LoadFileIntoProgramMemory(char* FileName) {
 
 			if (InstructionSet.find(CurrentMemory) != InstructionSet.end()) {
 				// the user has used a opcode for the memory
-				Current.MemorySegment = InstructionSet[CurrentMemory] - 1;
+				Current.MemorySegment = InstructionSet[CurrentMemory];
 			}
 			else {
 				Current.MemorySegment = std::stoull(CurrentMemory);
@@ -120,23 +129,17 @@ void ReadCurrentMemory() {
 		return;
 	}
 	else if (RAX <= Current.Type && Current.Type <= RHX) {
-		ProgramMemory[Current.Type - 1] = Current.MemorySegment;
-	}
-	/*else if (Current.Type == MOV) {
-
+		ProgramMemory[Current.Type - 1].MemorySegment = Current.MemorySegment;
 	}
 	else if (Current.Type == DRF) {
-
+		ProgramMemory[Current.MemorySegment - 1].MemorySegment = ProgramMemory[ ProgramMemory[Current.MemorySegment - 1].MemorySegment - 1].MemorySegment;
 	}
-	else if (Current.Type == ADD) {
-		//idk
-	}
-	else if (Current.Type == SUB){
-		//idk
+	else if (Current.Type == MOV) {
+		ProgramMemory[ProgramMemory[0].MemorySegment - 1] = ProgramMemory[ProgramMemory[1].MemorySegment - 1];
 	}
 	else if (Current.Type == SET){
-		ProgramMemory[Current.Seg0].Seg0 = Current.Seg1;
-	}*/
+		ProgramMemory[ProgramMemory[0].MemorySegment - 1].MemorySegment = ProgramMemory[1].MemorySegment;
+	}
 
 
 }
@@ -151,8 +154,5 @@ int main(int argc, char* argv[])
 	InitRegisters(16);
 	LoadFileIntoProgramMemory(argv[1]);
 
-
-
 	return 0;
 }
-
