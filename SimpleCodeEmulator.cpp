@@ -18,7 +18,10 @@ enum OpCode : uint32_t {
 	REX = 5,
 	RFX = 6,
 	RGX = 7,
-	RHX = 8
+	RHX = 8,
+
+	DRF = 9, // derefrencs **MemorySegment | **Register to *MemoryPointedTo
+
 };
 
 std::map<std::string, uint8_t> InstructionSet = { 
@@ -72,17 +75,30 @@ uint32_t LoadFileIntoProgramMemory(char* FileName) {
 			std::stringstream ss(line);
 
 			std::string CurrentInstruction;
+			std::string CurrentMemory;
+
 			ss >> CurrentInstruction;
+			ss >> CurrentMemory;
 
-			Current.Type = InstructionSet[CurrentInstruction];
-
-			if (Current.Type == 0 && CurrentInstruction != "NULL") {
+			if (InstructionSet.find(CurrentInstruction) != InstructionSet.end()) {
+				Current.Type = InstructionSet[CurrentInstruction];
+			}
+			else {
+				//the user has entred a non existant instruciton
 				std::cerr << "File " << FileName << " ON LINE " << LineNumber << " UNIDENTIFIED TYPE -" << CurrentInstruction << "-\n";
 			}
 
-			ss >> Current.MemorySegment;
+			if (InstructionSet.find(CurrentMemory) != InstructionSet.end()) {
+				// the user has used a opcode for the memory
+				Current.MemorySegment = InstructionSet[CurrentMemory] - 1;
+			}
+			else {
+				Current.MemorySegment = std::stoull(CurrentMemory);
+			}
 
 			ProgramMemory.emplace_back(Current);
+
+
 			LineNumber++;
 		}
 		File.close();
