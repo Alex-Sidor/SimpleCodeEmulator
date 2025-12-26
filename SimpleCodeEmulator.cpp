@@ -10,8 +10,7 @@
 //numbers represent the register # that you need to place the value for the operation to read from
 
 enum OpCode : uint32_t {
-	//codes for writing to registers
-	
+	//codes for writing to registers	
 	RAX = 1,
 	RBX = 2,
 	RCX = 3,
@@ -20,20 +19,18 @@ enum OpCode : uint32_t {
 	RFX = 6,
 	RGX = 7,
 	RHX = 8
-
-
-
 };
 
 std::map<std::string, uint8_t> InstructionSet = { 
-	{"NULL", NULL}, // None Type
-	{"MOV", RAX},
-	{"DRF", RBX},
-	{"ADD", RCX},
-	{"SUB", RDX},
-	{"SET", REX},
-	{"STP", RFX},
-	{"JMP", RGX}
+	{"NULL", NULL}, // Value Type
+	{"RAX", RAX},
+	{"RBX", RBX},
+	{"RCX", RCX},
+	{"RDX", RDX},
+	{"REX", REX},
+	{"RFX", RFX},
+	{"RGX", RGX},
+	{"RHX", RHX},
 };
 
 struct memory {
@@ -45,7 +42,7 @@ std::vector<memory> ProgramMemory;
 uint32_t ProgramCounter;
 
 void InitRegisters(int Amount) {
-	memory Register = { 0,0,0 };
+	memory Register = {0,0};
 
 	for (int i = 0; i < Amount; i++)
 	{
@@ -83,8 +80,7 @@ uint32_t LoadFileIntoProgramMemory(char* FileName) {
 				std::cerr << "File " << FileName << " ON LINE " << LineNumber << " UNIDENTIFIED TYPE -" << CurrentInstruction << "-\n";
 			}
 
-			ss >> Current.Seg0;
-			ss >> Current.Seg1;
+			ss >> Current.MemorySegment;
 
 			ProgramMemory.emplace_back(Current);
 			LineNumber++;
@@ -107,11 +103,14 @@ void ReadCurrentMemory() {
 	if (Current.Type == NULL) {
 		return;
 	}
-	else if (Current.Type == MOV) {
-		ProgramMemory[Current.Seg1] = ProgramMemory[Current.Seg0];
+	else if (RAX <= Current.Type && Current.Type <= RHX) {
+		ProgramMemory[Current.Type - 1] = Current.MemorySegment;
+	}
+	/*else if (Current.Type == MOV) {
+
 	}
 	else if (Current.Type == DRF) {
-		ProgramMemory[Current.Seg0] = ProgramMemory[Current.Seg0];
+
 	}
 	else if (Current.Type == ADD) {
 		//idk
@@ -121,7 +120,7 @@ void ReadCurrentMemory() {
 	}
 	else if (Current.Type == SET){
 		ProgramMemory[Current.Seg0].Seg0 = Current.Seg1;
-	}
+	}*/
 
 
 }
