@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="SimpleCodeEmulator.vcxproj" Id="5e2df5f8-d88e-4606-9224-6c8a1385600a" />
+</Solution>
